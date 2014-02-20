@@ -64,7 +64,7 @@ module Pending
         unclaimed.each do |tip|
           refund_amount = tip.satoshis - FEE
 
-          next if refund_amount < 10_000
+          next if refund_amount < (10_000 + 5500)
 
           ap tip.content
           ap tip.satoshis
