@@ -30,10 +30,6 @@ describe "Rouding" do
     expect(nFloat.to_satoshis).to eq(nSatoshis)
   end
 
-  it "should convert satoshis to nStr" do
-    expect(nSatoshis.to_BTCStr).to eq(nStr)
-  end
-
   it "should convert satoshis to nFloat" do
     expect(nSatoshis.to_BTCFloat).to eq(nFloat)
   end
