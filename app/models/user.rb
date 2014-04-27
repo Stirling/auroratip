@@ -37,18 +37,17 @@ class User < ActiveRecord::Base
 
     user.save
 
-    user.addresses.create(BitcoinAPI.generate_address)
+    user.addresses.create(BitcoinUtils.generate_address)
     user
   end
 
   def current_address
-    addresses.last.address
+    self.addresses.last.address
   end
 
   def get_balance
-    info = BitcoinAPI.get_info(current_address)
-    return unless info
-    info["final_balance"]
+    res = HelloBlock::Address.get(self.current_address)
+    res["balance"]
   end
 
   def likely_missing_fee?(amount)
@@ -62,16 +61,18 @@ class User < ActiveRecord::Base
 
   def enough_confirmed_unspents?(amount)
     begin
-      BitcoinAPI.get_unspents(current_address, amount + FEE)
-      true
+      res = HelloBlock::Address.get_unspents(current_address, {
+        value: amount + FEE
+      })
+      return true
     rescue Exception => e
       ap e.inspect
-      false
+      return false
     end
   end
 
   def withdraw(amount, to_address)
-    BitcoinAPI.send_tx(addresses.last, to_address, amount)
+    BitcoinUtils.send_tx(addresses.last.address, to_address, amount)
     true
   end
 

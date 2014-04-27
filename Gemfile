@@ -7,7 +7,7 @@ gem 'pg'
 gem 'angularjs-rails', '~> 1.2.5'
 gem 'angular-ui-bootstrap-rails'
 gem 'awesome_print'
-gem 'bitcoin-ruby', require: 'bitcoin'
+gem 'bitcoin-ruby', github: 'locksley/bitcoin-ruby', branch: "master", require: 'bitcoin'
 gem 'coffee-rails', '~> 4.0.0'
 gem 'dalli'
 gem 'dotenv'
@@ -25,6 +25,8 @@ gem 'pusher'
 gem 'sass-rails', '~> 4.0.0'
 gem 'twitter'
 gem 'uglifier', '>= 1.3.0'
+
+gem 'helloblock-lite', github: "locksley/helloblock-lite"
 
 group :development, :test do
   gem 'pry-rails'

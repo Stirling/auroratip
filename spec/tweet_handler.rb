@@ -65,7 +65,6 @@ describe Tweet::Handler, :vcr do
     end
 
     # How to effectively test API?
-
     it "should push a transaction"
 
     it "should reply to recipient"

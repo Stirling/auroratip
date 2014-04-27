@@ -61,8 +61,8 @@ class Tweet::Handler
   end
 
   def send_tx
-    tx = BitcoinAPI.send_tx(
-      @sender_user.addresses.last,
+    tx = BitcoinUtils.send_tx(
+      @sender_user.addresses.last.address,
       @recipient_user.addresses.last.address,
       @satoshis)
 

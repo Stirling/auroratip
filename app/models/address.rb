@@ -6,10 +6,4 @@ class Address < ActiveRecord::Base
   validates :public_key, presence: true, uniqueness: true
   validates :user_id, presence: true # TODO: validate relationship
 
-  ### TODO: validate public/private keys
-
-  def decrypt()
-  	@private_key = AES.decrypt(self.encrypted_private_key, ENV["DECRYPTION_KEY"])
-  end
-
 end
