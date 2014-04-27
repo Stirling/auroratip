@@ -1,19 +1,12 @@
 require 'spec_helper'
 
-describe Tweet::Handler, :vcr do
+describe Tweet::Handler do
 
   let(:sender) { "McTestor" }
   let(:status_id) { 2253000787 }
 
   context "Basic Handling:" do
-    let(:content) { "@JimmyMcTester, keep it up! Here's a tip 0.01 BTC @tippercoin" }
-    let(:info) {
-      {
-        recipient: "JimmyMcTester",
-        amount: 1_000_000,
-        sender: "McTestor"
-      }
-    }
+    let(:content) { "@JimmyMcTester, keep it up! Here's a tip 0.001 BTC @tippercoin" }
 
     before(:each) do
       @handler = Tweet::Handler.new(
@@ -33,7 +26,7 @@ describe Tweet::Handler, :vcr do
     end
 
     it "should set satoshis from parsed tweet" do
-      expect(@handler.satoshis).to eq(1_000_000)
+      expect(@handler.satoshis).to eq(100_000)
     end
 
     it "should have valid false by default" do
@@ -64,8 +57,17 @@ describe Tweet::Handler, :vcr do
       expect(@handler.tweet_tip.recipient.screen_name).to eq("JimmyMcTester")
     end
 
-    # How to effectively test API?
-    it "should push a transaction"
+    it "should push a transaction" do
+      @handler.save_tweet_tip
+      address = @handler.sender_user.addresses[0].address
+      withdrawal = HelloBlock::Faucet.withdrawal({
+        toAddress: address,
+        value: 120_000
+      })
+      p withdrawal
+      res = @handler.send_tx
+      expect(res).to eq(true)
+    end
 
     it "should reply to recipient"
 

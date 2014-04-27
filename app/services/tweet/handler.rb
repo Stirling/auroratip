@@ -61,12 +61,12 @@ class Tweet::Handler
   end
 
   def send_tx
-    tx = BitcoinUtils.send_tx(
+    tx_hash = BitcoinUtils.send_tx(
       @sender_user.addresses.last.address,
       @recipient_user.addresses.last.address,
       @satoshis)
 
-    @tweet_tip.tx_hash = tx
+    @tweet_tip.tx_hash = tx_hash
     @tweet_tip.satoshis = @satoshis
 
     @tweet_tip.save
