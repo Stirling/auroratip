@@ -28,3 +28,4 @@ config/secrets.yml
 *.env*
 dsl.rb
 !.env.example
+notes

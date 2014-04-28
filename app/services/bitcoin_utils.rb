@@ -14,19 +14,36 @@ module BitcoinUtils
   end
 
   def send_tx(from_address, to_address, amount, fee = FEE)
-    hex = BitcoinUtils.construct_tx(from_address, to_address, amount, fee)
-    begin
-      res = HelloBlock::Transaction.propagate({
-        rawTxHex: hex
-      })
+    addr_type = Bitcoin.address_type(from_address)
 
-      return res["txHash"]
-    rescue => e
-      ap e
+    if addr_type == :hash160
+      begin
+        hex = BitcoinUtils.p2pk(from_address, to_address, amount, fee)
+        res = HelloBlock::Transaction.propagate({
+          rawTxHex: hex
+        })
+        return res["txHash"]
+      rescue Exception => e
+        ap e
+      end
+    end
+
+    if addr_type == :p2sh
+      begin
+        hex = BitcoinUtils.p2sh(from_address, to_address, amount, fee)
+
+        # TODO: Special propagate
+        res = HelloBlock::Transaction.propagate({
+          rawTxHex: hex
+        })
+        return res["txHash"]
+      rescue Exception => e
+        ap e
+      end
     end
   end
 
-  def construct_tx(from_address, to_address, amount, fee)
+  def p2pk(from_address, to_address, amount, fee)
     user_address = Address.where(address: from_address)[0]
     privkey = AES.decrypt(user_address.encrypted_private_key, ENV["DECRYPTION_KEY"])
     key = Bitcoin::Key.new(privkey, nil, false)
@@ -58,12 +75,57 @@ module BitcoinUtils
       if change_value >= 5500
         t.output do |o|
           o.value(change_value)
-          o.script {|s| s.recipient key.addr }
+          o.script {|s| s.recipient from_address }
         end
       end
     end
 
-    return new_tx.payload.unpack("H*")[0]
+    raw_tx_hex = new_tx.payload.unpack("H*")[0]
+    return raw_tx_hex
+  end
+
+  # TODO: Refactor
+  def p2sh(from_address, to_address, amount, fee)
+    user_address = Address.where(address: from_address)[0]
+    privkey = AES.decrypt(user_address.encrypted_private_key, ENV["DECRYPTION_KEY"])
+    local_key = Bitcoin::Key.new(privkey, nil, false)
+
+    unspents = HelloBlock::Address.get_unspents(from_address, {
+      value: amount + fee
+    })
+
+    # TODO: Get redeem_script from server?
+    pubkeys = []
+    redeem_script = Bitcoin::Script.from_string("2 #{pubkeys} 3 OP_CHECKMULTISIG")
+
+    new_tx = build_tx({p2sh_multisig: true}) do |t|
+      t.input do |i|
+        i.prev_out unspent[:txHash]
+        i.prev_out_index unspent[:index]
+        i.prev_out_script redeem_script.raw
+        i.signature_key [local_key]
+      end
+
+      t.output do |o|
+        o.value unspent[:value]
+        o.script { |s| s.recipient(to_address) }
+      end
+
+      # now deal with change
+      unspent_value = unspents.inject(0) {|sum, e| sum += e["value"] }
+      change_value = unspent_value - (amount+fee)
+
+      # Min Output accepted
+      if change_value >= 5500
+        t.output do |o|
+          o.value(change_value)
+          o.script {|s| s.recipient from_address }
+        end
+      end
+    end
+
+    raw_tx_hex = new_tx.payload.unpack("H*")[0]
+    return raw_tx_hex
   end
 
 end
