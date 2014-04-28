@@ -1,5 +1,4 @@
 class Address < ActiveRecord::Base
-  attr_reader :private_key
   belongs_to :user
 
   validates :encrypted_private_key, presence: true, uniqueness: true
