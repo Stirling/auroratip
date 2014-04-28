@@ -51,6 +51,7 @@ class User < ActiveRecord::Base
     # hb_public_key = HelloBlock::Transaction
     # pubkeys = [public_key, cold_public_key, hb_public_key].sort
     # redeem_script = Bitcoin::Script.from_string("2 #{pubkeys} 3 OP_CHECKMULTISIG")
+    # address = Bitcoin.hash160(redeem_script)
     address = ""
 
     self.addresses.create({
