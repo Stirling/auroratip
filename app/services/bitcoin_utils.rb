@@ -94,16 +94,16 @@ module BitcoinUtils
       value: amount + fee
     })
 
-    # TODO: Get redeem_script from server?
-    pubkeys = []
-    redeem_script = Bitcoin::Script.from_string("2 #{pubkeys} 3 OP_CHECKMULTISIG")
+    redeem_script = user_address.redeem_script
 
     new_tx = build_tx({p2sh_multisig: true}) do |t|
-      t.input do |i|
-        i.prev_out unspent[:txHash]
-        i.prev_out_index unspent[:index]
-        i.prev_out_script redeem_script.raw
-        i.signature_key [local_key]
+      unspents.each do |unspent|
+        t.input do |i|
+          i.prev_out unspent[:txHash]
+          i.prev_out_index unspent[:index]
+          i.prev_out_script redeem_script.raw
+          i.signature_key [local_key]
+        end
       end
 
       t.output do |o|

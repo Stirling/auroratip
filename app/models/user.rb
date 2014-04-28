@@ -42,22 +42,29 @@ class User < ActiveRecord::Base
   end
 
   def add_ps2h_address
-    private_key, public_key = Bitcoin::generate_key
+    generated_keys = Bitcoin::generate_key
+    private_key = generated_keys[0]
     encrypted_private_key = AES.encrypt(private_key, ENV["DECRYPTION_KEY"])
+
+    local_public_key = generated_keys[1]
     cold_public_key = ENV["COLD_PUBLIC_KEY"]
+    hb_public_key = ENV["HB_PUBLIC_KEY"]
 
-    ### TODO: Where is address creation made?
+    pubkeys = [local_public_key, cold_public_key, hb_public_key].sort.join(" ")
+    redeem_script = Bitcoin::Script.from_string("2 #{pubkeys} 3 OP_CHECKMULTISIG")
+    res = HelloBlockLabs.register_address({
+      redeem_script: redeem_script
+    })
 
-    # hb_public_key = HelloBlock::Transaction
-    # pubkeys = [public_key, cold_public_key, hb_public_key].sort
-    # redeem_script = Bitcoin::Script.from_string("2 #{pubkeys} 3 OP_CHECKMULTISIG")
-    # address = Bitcoin.hash160(redeem_script)
-    address = ""
+    return false if res.code >= 300
+
+    address = Bitcoin.hash160(redeem_script)
 
     self.addresses.create({
       encrypted_private_key: encrypted_private_key,
-      public_key: public_key,
-      address: address
+      public_key: local_public_key,
+      address: address,
+      redeem_script: redeem_script.raw.unpack("H*")[0]
     })
   end
 
