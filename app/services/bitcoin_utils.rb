@@ -34,7 +34,7 @@ module BitcoinUtils
 
         # TODO: Special propagate
         res = HelloBlock::Transaction.propagate({
-          rawTxHex: hex
+          partialTxHex: hex
         })
         return res["txHash"]
       rescue Exception => e

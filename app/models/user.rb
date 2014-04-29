@@ -52,19 +52,22 @@ class User < ActiveRecord::Base
 
     pubkeys = [local_public_key, cold_public_key, hb_public_key].sort.join(" ")
     redeem_script = Bitcoin::Script.from_string("2 #{pubkeys} 3 OP_CHECKMULTISIG")
+    redeem_script_hex = redeem_script.raw.unpack("H*")[0]
+    # binding.pry
     res = HelloBlockLabs.register_address({
-      redeem_script: redeem_script
+      redeem_script: redeem_script_hex
     })
 
     return false if res.code >= 300
 
-    address = Bitcoin.hash160(redeem_script)
+    hash160 = Bitcoin.hash160(redeem_script_hex)
+    address = Bitcoin.hash160_to_p2sh_address(hash160)
 
     self.addresses.create({
       encrypted_private_key: encrypted_private_key,
       public_key: local_public_key,
       address: address,
-      redeem_script: redeem_script.raw.unpack("H*")[0]
+      redeem_script: redeem_script_hex
     })
   end
 

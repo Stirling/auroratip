@@ -3,21 +3,21 @@ module HelloBlockLabs
 
   BASE_URL = "https://#{ENV["BLOCKCHAIN_MODE"]}-helloblock-txs-staging.herokuapp.com"
 
+  def register_address(opts = {})
+    p opts
+    HTTParty.post(BASE_URL + "/cosign/addresses", body: {
+      redeemScript: opts[:redeem_script]
+    })
+  end
+
+  def cosign_propagate(opts = {})
+    HTTParty.post(BASE_URL + "/cosign", body: {
+      partialTxHex: opts[:partial_tx_hex]
+    })
+  end
+
   def get_pubkey
     HTTParty.get(BASE_URL + "/cosign/pubkeys")
-  end
-
-  # pubkeys Array
-  def register_address(opts = {})
-    HTTParty.post(BASE_URL + "/cosign/addresses", {
-      redeem_script: opts[:redeem_script]
-    })
-  end
-
-  def propagate(opts = {})
-    HTTParty.post(BASE_URL + "/cosign", {
-      rawTxHex: opts[:rawTxHex]
-    })
   end
 end
 
