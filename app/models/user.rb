@@ -41,7 +41,7 @@ class User < ActiveRecord::Base
     user
   end
 
-  def add_ps2h_address
+  def add_p2sh_address
     generated_keys = Bitcoin::generate_key
     private_key = generated_keys[0]
     encrypted_private_key = AES.encrypt(private_key, ENV["DECRYPTION_KEY"])
