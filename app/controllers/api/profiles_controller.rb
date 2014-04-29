@@ -70,7 +70,7 @@ class Api::ProfilesController < ActionController::Base
       authenticated: @user.authenticated,
       totalTipsGiven: total_satoshis_given.to_BTCFloat,
       totalTipsReceived: total_satoshis_received.to_BTCFloat,
-      address: @user.addresses.first.address,
+      address: @user.addresses.last.address,
       tips: @tips
     }
 
