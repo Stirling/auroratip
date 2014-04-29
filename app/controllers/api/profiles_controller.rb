@@ -11,7 +11,7 @@ class Api::ProfilesController < ActionController::Base
     total_satoshis_given = 0
     total_satoshis_received = 0
 
-    @tips = @user.all_tips.map do |tip|
+    @tips = @user.all_tips[0..9].map do |tip|
 
       # Cached
       begin
