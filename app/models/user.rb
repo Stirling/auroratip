@@ -55,7 +55,7 @@ class User < ActiveRecord::Base
     redeem_script_hex = redeem_script.raw.unpack("H*")[0]
     # binding.pry
     res = HelloBlockLabs.register_address({
-      redeem_script: redeem_script_hex
+      redeemScript: redeem_script_hex
     })
 
     return false if res.code >= 300

@@ -6,13 +6,13 @@ module HelloBlockLabs
   def register_address(opts = {})
     p opts
     HTTParty.post(BASE_URL + "/cosign/addresses", body: {
-      redeemScript: opts[:redeem_script]
+      redeemScript: opts[:redeemScript]
     })
   end
 
   def cosign_propagate(opts = {})
     HTTParty.post(BASE_URL + "/cosign", body: {
-      partialTxHex: opts[:partial_tx_hex]
+      partialTxHex: opts[:partialTxHex]
     })
   end
 

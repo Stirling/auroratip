@@ -23,22 +23,24 @@ module BitcoinUtils
           rawTxHex: hex
         })
         return res["txHash"]
-      rescue Exception => e
-        ap e
+      rescue => e
+        ap e.inspect
+        ap e.backtrace
       end
     end
 
     if addr_type == :p2sh
       begin
-        hex = BitcoinUtils.p2sh(from_address, to_address, amount, fee)
+        # Double fee for large inputs
+        hex = BitcoinUtils.p2sh(from_address, to_address, amount, fee * 2)
 
-        # TODO: Special propagate
-        res = HelloBlock::Transaction.propagate({
+        res = HelloBlockLabs.cosign_propagate({
           partialTxHex: hex
         })
         return res["txHash"]
-      rescue Exception => e
-        ap e
+      rescue => e
+        ap e.inspect
+        ap e.backtrace
       end
     end
   end
@@ -98,16 +100,19 @@ module BitcoinUtils
 
     new_tx = build_tx({p2sh_multisig: true}) do |t|
       unspents.each do |unspent|
+        # binding.pry
         t.input do |i|
-          i.prev_out unspent[:txHash]
-          i.prev_out_index unspent[:index]
-          i.prev_out_script redeem_script.raw
+          i.prev_out unspent["txHash"]
+          i.prev_out_index unspent["index"]
+          i.prev_out_script [redeem_script].pack("H*")
           i.signature_key [local_key]
         end
       end
 
+
+
       t.output do |o|
-        o.value unspent[:value]
+        o.value amount
         o.script { |s| s.recipient(to_address) }
       end
 
