@@ -5,7 +5,7 @@ module BitcoinNodeAPI
     # string address
     # response float
     def get_balance(address)
-        get("api.dws?q=getbalance&a="+address, false).to_f
+        get("api.dws?q=getbalance&a="+address, false).to_f.to_satoshis
     end
 
     # string[] addresses
