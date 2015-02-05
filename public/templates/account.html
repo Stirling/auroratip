@@ -18,7 +18,7 @@
             </blockquote>
             <blockquote ng-show="account.messages.deposit">
               <p class="lead lead-super">
-                Activate your account by depositing <span class='text-primary'><strong>>= {{account.deposit.amount}} BTC</strong></span>
+                Activate your account by depositing <span class='text-primary'><strong>>= {{account.deposit.amount}} AUR</strong></span>
               </p>
             </blockquote>
             <blockquote ng-if="account.balance == 'n/a'">
@@ -49,7 +49,7 @@
           </blockquote>
           <blockquote ng-show="account.messages.withdraw.success">
             <p class="lead lead-super text-center text-success">
-              Congratulations, you have successfully withdrawn {{withdraw.amount}} BTC
+              Congratulations, you have successfully withdrawn {{withdraw.amount}} AUR
             </p>
           </blockquote>
           <blockquote ng-show="account.messages.withdraw.error">
@@ -86,7 +86,7 @@
             <div class="row error-messages">
               <div class="col-sm-10 col-sm-offset-2">
                 <div ng-show="withdrawForm.amount.$error.min">
-                  Must be above 0.0001 BTC
+                  Must be above 0.0001 AUR
                 </div>
                 <div ng-show="withdrawForm.amount.$error.max">
                   Not enough in balance (incl. Miner Fees)
@@ -138,7 +138,7 @@
       </tab>
       <p class="lead balance pull-right">
         <span>Balance:</span>
-        <strong class='text-success'>{{account.balance | number:8}} BTC</strong>
+        <strong class='text-success'>{{account.balance | number:8}} AUR</strong>
       </p>
     </tabset>
   </div>

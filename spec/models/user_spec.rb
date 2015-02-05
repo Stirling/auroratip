@@ -75,7 +75,7 @@ end
 
 describe User, '.create_profile' do
   before :each do
-    BitcoinUtils.stub(:generate_address)
+    BitcoinAPI.stub(:generate_address)
   end
 
   it 'creates a user with a slug and address if a user does not exist' do
@@ -84,7 +84,7 @@ describe User, '.create_profile' do
     expect(profile).to be_persisted
     expect(profile.slug).to be_present
     expect(profile.addresses).to be_present
-    expect(BitcoinUtils).to have_received(:generate_address)
+    expect(BitcoinAPI).to have_received(:generate_address)
   end
 
   it 'finds a user and assigns a slug and address if they do not exist' do
@@ -95,7 +95,7 @@ describe User, '.create_profile' do
     expect(profile).to eq user
     expect(profile.slug).to be_present
     expect(profile.addresses).to be_present
-    expect(BitcoinUtils).to have_received(:generate_address)
+    expect(BitcoinAPI).to have_received(:generate_address)
   end
 
   it 'finds a user and returns without overwriting attributes if they exist' do
@@ -107,7 +107,7 @@ describe User, '.create_profile' do
     expect(profile).to eq user
     expect(profile.slug).to eq user.slug
     expect(profile.addresses).to include address
-    expect(BitcoinUtils).to have_received(:generate_address)
+    expect(BitcoinAPI).to have_received(:generate_address)
   end
 
   it 'returns nil if passed nil' do
@@ -148,14 +148,14 @@ end
 
 # describe User, '#get_balance' do
 #   it 'returns the balance from the Bitcoin API' do
-#     BitcoinUtils.stub(:get_info).and_return({ 'final_balance' => 200 })
+#     BitcoinAPI.stub(:get_info).and_return({ 'final_balance' => 200 })
 #     user = create(:user)
 #     address = create(:address, user: user)
 
 #     balance = user.get_balance
 
 #     expect(balance).to eq 200
-#     expect(BitcoinUtils).to have_received(:get_info).with(user.current_address)
+#     expect(BitcoinAPI).to have_received(:get_info).with(user.current_address)
 #   end
 # end
 
@@ -193,13 +193,13 @@ end
 
 describe User, '#enough_confirmed_unspents?' do
   it 'gets unspents from the Bitcoin API' do
-    BitcoinUtils.stub(:get_unspents)
+    BitcoinAPI.stub(:get_unspents)
     user = create(:user)
     address = create(:address, user: user)
 
     user.enough_confirmed_unspents?(100_000)
 
-    expect(BitcoinUtils).to have_received(:get_unspents).with(
+    expect(BitcoinAPI).to have_received(:get_unspents).with(
       user.current_address, 110_000
     )
   end
@@ -219,11 +219,11 @@ describe User, '#withdraw' do
       encrypted_private_key: SecureRandom.hex(64),
       public_key: SecureRandom.hex(64),
     )
-    BitcoinUtils.stub(:send_tx)
+    BitcoinAPI.stub(:send_tx)
 
     user.withdraw(100_000, to_address)
 
-    expect(BitcoinUtils).to have_received(:send_tx).with(
+    expect(BitcoinAPI).to have_received(:send_tx).with(
       from_address, to_address, 100_000
     )
   end

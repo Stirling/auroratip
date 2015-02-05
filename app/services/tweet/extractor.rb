@@ -20,32 +20,32 @@ module Tweet::Extractor
     SYMBOLS = [
       {
         name: :mBTC_SUFFIX,
-        regex: /\s(\d*.?\d*)\s?mBTC/i,
+        regex: /\s(\d*.?\d*)\s?mAUR/i,
         satoshify: Proc.new {|nStr| nStr.to_millibit_satoshis }
       },
       {
         name: :mBTC_PREFIX,
-        regex: /mBTC\s?(\d*.?\d*)/i,
+        regex: /mAUR\s?(\d*.?\d*)/i,
         satoshify: Proc.new {|nStr| nStr.to_millibit_satoshis }
       },
       {
         name: :BTC_SUFFIX,
-        regex: /\s(\d*.?\d*)\s?BTC/i,
+        regex: /\s(\d*.?\d*)\s?AUR/i,
         satoshify: Proc.new {|nStr| nStr.to_satoshis }
       },
       {
         name: :bitcoin_SUFFIX,
-        regex: /\s(\d*.?\d*)\s?bitcoin/i,
+        regex: /\s(\d*.?\d*)\s?auroracoin/i,
         satoshify: Proc.new {|nStr| nStr.to_satoshis }
       },
       {
         name: :BTC_SIGN,
-        regex: /฿\s?(\d*.?\d*)/i,
+        regex: /ᚠ\s?(\d*.?\d*)/i,
         satoshify: Proc.new {|nStr| nStr.to_satoshis }
       },
       {
         name: :BTC_PREFIX,
-        regex: /BTC\s?(\d*.?\d*)/i,
+        regex: /AUR\s?(\d*.?\d*)/i,
         satoshify: Proc.new {|nStr| nStr.to_satoshis }
       },
       {

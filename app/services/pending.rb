@@ -71,7 +71,7 @@ module Pending
           ap refund_amount
 
           if !dry
-            tx = BitcoinUtils.send_tx(
+            tx = BitcoinAPI.send_tx(
               recipient.addresses.last.address,
               tip.sender.addresses.last.address,
               refund_amount)

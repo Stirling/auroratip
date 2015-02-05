@@ -18,7 +18,7 @@ TWITTER_STREAM = Twitter::Streaming::Client.new do |config|
 end
 
 HASHTAG = if Rails.env.production?
-  "#tippercoin"
+  "#aurtips"
 else
-  "#tippercointest"
+  "#aurtips"
 end

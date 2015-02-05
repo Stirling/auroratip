@@ -14,7 +14,7 @@ end
 
 # describe Address do
 # 	it "decrypts private key" do
-# 		payload = BitcoinUtils.generate_address()
+# 		payload = BitcoinAPI.generate_address()
 # 		decrypted_key = AES.decrypt(payload[:encrypted_private_key], ENV["DECRYPTION_KEY"])
 # 		address = Address.new(payload.merge(:user_id => 1))
 # 		address.save

@@ -7,7 +7,7 @@ namespace :transactions do
     amount = 40_000
     fee = 10_000
 
-    msg = BitcoinUtils.send_tx(from_address, to_address, amount, fee)
+    msg = BitcoinAPI.send_tx(from_address, to_address, amount, fee)
     ap msg
   end
 

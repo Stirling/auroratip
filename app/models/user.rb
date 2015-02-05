@@ -37,7 +37,7 @@ class User < ActiveRecord::Base
 
     user.save
 
-    user.addresses.create(BitcoinUtils.generate_address)
+    user.addresses.create(BitcoinAPI.generate_address)
     user
   end
 
@@ -54,11 +54,6 @@ class User < ActiveRecord::Base
     redeem_script = Bitcoin::Script.from_string("2 #{pubkeys} 3 OP_CHECKMULTISIG")
     redeem_script_hex = redeem_script.raw.unpack("H*")[0]
     # binding.pry
-    res = HelloBlockLabs.register_address({
-      redeemScript: redeem_script_hex
-    })
-
-    return false if res.code >= 300
 
     hash160 = Bitcoin.hash160(redeem_script_hex)
     address = Bitcoin.hash160_to_p2sh_address(hash160)
@@ -76,8 +71,7 @@ class User < ActiveRecord::Base
   end
 
   def get_balance
-    res = HelloBlock::Address.get(self.current_address)
-    res["balance"]
+    BitcoinAPI.get_balance(self.current_address)
   end
 
   def likely_missing_fee?(amount)
@@ -91,9 +85,7 @@ class User < ActiveRecord::Base
 
   def enough_confirmed_unspents?(amount)
     begin
-      res = HelloBlock::Address.get_unspents(current_address, {
-        value: amount + FEE
-      })
+      BitcoinAPI.get_unspents(current_address, amount + FEE)
       return true
     rescue Exception => e
       ap e.inspect
@@ -102,7 +94,7 @@ class User < ActiveRecord::Base
   end
 
   def withdraw(amount, to_address)
-    BitcoinUtils.send_tx(addresses.last.address, to_address, amount)
+    BitcoinAPI.send_tx(addresses.last.address, to_address, amount)
     true
   end
 

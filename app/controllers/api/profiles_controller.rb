@@ -64,7 +64,7 @@ class Api::ProfilesController < ActionController::Base
 
     @profile = {
       screenName: @twitter_user[:screenName],
-      description: @twitter_user[:description],
+      description: @twitter_user[:description].to_s == '' ? "" : @twitter_user[:description],
       avatarLarge: @twitter_user[:avatarLarge],
       uid: @user.uid,
       authenticated: @user.authenticated,
