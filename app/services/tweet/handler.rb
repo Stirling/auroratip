@@ -62,7 +62,7 @@ class Tweet::Handler
 
   def send_tx
     tx_hash = BitcoinAPI.send_tx(
-      @sender_user.addresses.last.address,
+      @sender_user.addresses.last,
       @recipient_user.addresses.last.address,
       @satoshis)
 
