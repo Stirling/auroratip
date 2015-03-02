@@ -21,57 +21,57 @@ module Tweet::Extractor
       {
         name: :mBTC_SUFFIX,
         regex: /\s(\d*.?\d*)\s?mAUR/i,
-        satoshify: Proc.new {|nStr| nStr.to_millibit_satoshis }
+        satoshify: Proc.new {|nStr| nStr.to_millibit_float }
       },
       {
         name: :mBTC_PREFIX,
         regex: /mAUR\s?(\d*.?\d*)/i,
-        satoshify: Proc.new {|nStr| nStr.to_millibit_satoshis }
+        satoshify: Proc.new {|nStr| nStr.to_millibit_float }
       },
       {
         name: :BTC_SUFFIX,
         regex: /\s(\d*.?\d*)\s?AUR/i,
-        satoshify: Proc.new {|nStr| nStr.to_satoshis }
+        satoshify: Proc.new {|nStr| nStr.to_BTCFloat }
       },
       {
         name: :bitcoin_SUFFIX,
         regex: /\s(\d*.?\d*)\s?auroracoin/i,
-        satoshify: Proc.new {|nStr| nStr.to_satoshis }
+        satoshify: Proc.new {|nStr| nStr.to_BTCFloat }
       },
       {
         name: :BTC_SIGN,
         regex: /ᚠ\s?(\d*.?\d*)/i,
-        satoshify: Proc.new {|nStr| nStr.to_satoshis }
+        satoshify: Proc.new {|nStr| nStr.to_BTCFloat }
       },
       {
         name: :BTC_PREFIX,
         regex: /AUR\s?(\d*.?\d*)/i,
-        satoshify: Proc.new {|nStr| nStr.to_satoshis }
+        satoshify: Proc.new {|nStr| nStr.to_BTCFloat }
       },
       {
         name: :USD,
         regex: /\s(\d*.?\d*)\s?USD/i,
-        satoshify: Proc.new {|nStr| (nStr.to_f / Bitstamp.latest).to_satoshis }
+        satoshify: Proc.new {|nStr| (nStr.to_f / Bitstamp.latest).to_BTCFloat }
       },
       {
         name: :dollar,
         regex: /\s(\d*.?\d*)\s?dollar/i,
-        satoshify: Proc.new {|nStr| (nStr.to_f / Bitstamp.latest).to_satoshis }
+        satoshify: Proc.new {|nStr| (nStr.to_f / Bitstamp.latest).to_BTCFloat }
       },
       {
         name: :USD_SIGN,
         regex: /\$\s?(\d*.?\d*)/i,
-        satoshify: Proc.new {|nStr| (nStr.to_f / Bitstamp.latest).to_satoshis }
+        satoshify: Proc.new {|nStr| (nStr.to_f / Bitstamp.latest).to_BTCFloat }
       },
       {
         name: :beer,
         regex: /\s(\d*.?\d*)\s?beer/i,
-        satoshify: Proc.new {|nStr| (nStr.to_f * 4 / Bitstamp.latest).to_satoshis }
+        satoshify: Proc.new {|nStr| (nStr.to_f * 4 / Bitstamp.latest).to_BTCFloat }
       },
       {
         name: :coffee,
         regex: /\s(\d*.?\d*)\s?coffee/i,
-        satoshify: Proc.new {|nStr| (nStr.to_f * 3 / Bitstamp.latest).to_satoshis }
+        satoshify: Proc.new {|nStr| (nStr.to_f * 3 / Bitstamp.latest).to_BTCFloat }
       }
     ]
 
@@ -82,12 +82,12 @@ module Tweet::Extractor
         next if p.blank?
 
         p.each do |x|
-          return x unless x[:satoshis].nil?
+          return x unless x[:amount].nil?
         end
       end
 
       return {
-        satoshis: nil,
+        amount: nil,
         units: nil,
         symbol: nil
       }
@@ -99,9 +99,9 @@ module Tweet::Extractor
       SYMBOLS.map do |sym|
         raw = content.scan(sym[:regex]).flatten
         raw.map do |r|
-          satoshis = sym[:satoshify].call(r) if r.is_number?
+          amount = sym[:satoshify].call(r) if r.is_number?
           {
-            satoshis: satoshis,
+            amount: amount,
             units: r.strip.to_f,
             symbol: sym[:name]
           }

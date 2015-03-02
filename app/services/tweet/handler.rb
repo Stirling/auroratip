@@ -3,7 +3,7 @@ class Tweet::Handler
   attr_accessor :content, :sender, :recipient,
   :reply, :recipient_user, :sender_user,
   :status_id, :parsed_tweet, :valid, :state,
-  :reply_id, :tweet_tip, :satoshis
+  :reply_id, :tweet_tip, :amount
 
   def initialize(content: nil, sender: nil, status_id: nil)
     @content = content
@@ -11,7 +11,7 @@ class Tweet::Handler
     @status_id = status_id
     @reply_id = status_id
     @parsed_tweet = Tweet::Parser.new(@content, @sender)
-    @satoshis = @parsed_tweet.satoshis
+    @amount = @parsed_tweet.amount
     @recipient = @parsed_tweet.recipient
     @valid = false
     @sender_user = User.find_profile(@sender) || User.create_profile(@sender)
@@ -34,22 +34,22 @@ class Tweet::Handler
     # @state represents what went wrong, and associated message method
     return @state = :unauthenticated if !@sender_user.authenticated
     return @state = :direct_tweet if @parsed_tweet.direct_tweet?
-    return @state = :zero_amount if @satoshis && @satoshis.zero?
-    return @state = :min_output if @satoshis && @satoshis < 5_550
+    return @state = :zero_amount if @amount && @amount.zero?
+    return @state = :min_output if @amount && @amount < 0.0000555
     return @state = :likely_forgot_symbol if @parsed_tweet.likely_forgot_symbol?
     return @state = :unknown if !@parsed_tweet.valid? # Other Unknown Error
-    return @state = :likely_missing_fee if @sender_user.likely_missing_fee?(@satoshis)
-    return @state = :not_enough_balance if !@sender_user.enough_balance?(@satoshis)
+    return @state = :likely_missing_fee if @sender_user.likely_missing_fee?(@amount)
+    return @state = :not_enough_balance if !@sender_user.enough_balance?(@amount)
 
     # we should have confirmed that there is enough balance now
-    return @state = :enough_confirmed_unspents if !@sender_user.enough_confirmed_unspents?(@satoshis)
+    return @state = :enough_confirmed_unspents if !@sender_user.enough_confirmed_unspents?(@amount)
     @valid = true
   end
 
   def reply_build
     if @valid
       @reply = Tweet::Message::Valid.recipient(
-        @recipient, @sender, @satoshis)
+        @recipient, @sender, @amount)
     else
       @reply = Tweet::Message::Invalid.send(@state, @sender)
       @reply_id = nil
@@ -64,10 +64,10 @@ class Tweet::Handler
     tx_hash = BitcoinAPI.send_tx(
       @sender_user.addresses.last,
       @recipient_user.addresses.last.address,
-      @satoshis)
+      @amount)
 
     @tweet_tip.tx_hash = tx_hash
-    @tweet_tip.satoshis = @satoshis
+    @tweet_tip.amount = @amount
 
     @tweet_tip.save
   end

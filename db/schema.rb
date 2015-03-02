@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140428214726) do
+ActiveRecord::Schema.define(version: 20150302174918) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -60,9 +60,10 @@ ActiveRecord::Schema.define(version: 20140428214726) do
   add_index "rails_admin_histories", ["item", "table", "month", "year"], name: "index_rails_admin_histories", using: :btree
 
   create_table "transactions", force: true do |t|
-    t.integer "tweet_tip_id", null: false
-    t.integer "satoshis",     null: false
-    t.string  "tx_hash",      null: false
+    t.integer "tweet_tip_id",                          null: false
+    t.integer "satoshis",                              null: false
+    t.string  "tx_hash",                               null: false
+    t.decimal "amount",       precision: 16, scale: 8
   end
 
   create_table "tweet_tips", force: true do |t|
@@ -76,6 +77,7 @@ ActiveRecord::Schema.define(version: 20140428214726) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "tx_hash_refund"
+    t.decimal  "amount",           precision: 16, scale: 8
   end
 
   add_index "tweet_tips", ["content"], name: "index_tweet_tips_on_content", using: :btree

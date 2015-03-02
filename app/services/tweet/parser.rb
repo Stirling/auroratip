@@ -2,8 +2,8 @@ require 'csv'
 
 class Tweet::Parser
 
-  attr_accessor :content, :sender, :info, :mentions, :amount,
-  :satoshis, :units, :symbol, :recipient
+  attr_accessor :content, :sender, :info, :mentions, :tamount,
+  :amount, :units, :symbol, :recipient
 
   BOT = "auroratip"
 
@@ -12,18 +12,18 @@ class Tweet::Parser
     @sender = sender
 
     @mentions = Tweet::Extractor::Mentions.parse(@content)
-    @amount = Tweet::Extractor::Amounts.parse(@content)
+    @tamount = Tweet::Extractor::Amounts.parse(@content)
 
     @recipient = @mentions.first
-    @satoshis = @amount[:satoshis]
-    @units = @amount[:units]
-    @symbol = @amount[:symbol]
+    @amount = @tamount[:amount]
+    @units = @tamount[:units]
+    @symbol = @tamount[:symbol]
   end
 
   def valid?
     return false if direct_tweet?
     return false if @recipient.blank?
-    return false if @satoshis.blank? || @satoshis.zero?
+    return false if @amount.blank? || @amount.zero?
     return false if @units.blank?
     return false if @symbol.blank?
     return false if @sender == BOT

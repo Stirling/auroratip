@@ -23,7 +23,7 @@ module Tweet::Runner
 
     ap 'checking validity ...'
     handler.check_validity
-
+    ap handler.state
 
     if !handler.valid
       if handler.state == :unknown

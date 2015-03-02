@@ -20,11 +20,11 @@ class TweetTip < ActiveRecord::Base
   end
 
   def self.is_valid
-    where.not(tx_hash: nil, satoshis: nil)
+    where.not(tx_hash: nil, amount: nil)
   end
 
   def is_valid?
-    tx_hash.present? && satoshis.present?
+    tx_hash.present? && amount.present?
   end
 
 end

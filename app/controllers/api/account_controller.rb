@@ -11,7 +11,7 @@ class Api::AccountController < ActionController::Base
 
     begin
 
-      amount = params[:withdrawAmount].to_satoshis
+      amount = params[:withdrawAmount].to_BTCFloat
       to_address = params[:toAddress]
 
       result = @user.withdraw(amount, to_address)

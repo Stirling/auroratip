@@ -23,11 +23,10 @@ module BitcoinAPI
   # exception is raised, ensure to rescue
   # BitcoinAPI.send_tx(from_address, "15TLNJ24UFixU1Vn7eogJYvgaH324SocK4", 0.001.to_satoshi, FEE)
   def send_tx(from_address, to_address, amount, fee = FEE)
-    raise AmountShouldBeFixnum if amount.class != Fixnum
-    hex = construct_tx(from_address, to_address, amount, fee)
-    ap hex
-    #push_tx(hex)
-    return hex
+    #raise AmountShouldBeFixnum if amount.class != Fixnum
+    hex, tx_hash = construct_tx(from_address, to_address, amount, fee)
+    push_tx(hex)
+    return tx_hash
   end
 
   def construct_tx(from_address, to_address, amount, fee)
@@ -46,23 +45,21 @@ module BitcoinAPI
       end
 
       t.output do |o|
-        o.value(amount)
+        o.value(amount.to_satoshis)
         o.script {|s| s.recipient(to_address) }
       end
 
       # now deal with change
       change_value = unspents.unspent_value - (amount+fee).to_BTCFloat
-      ap unspents.unspent_value
-      ap (amount+fee).to_BTCFloat
       if change_value > 0
         t.output do |o|
-          o.value(change_value)
+          o.value(change_value.to_satoshis)
           o.script {|s| s.recipient from_address.address }
         end
       end      
     end
 
-    return new_tx.payload.unpack("H*").first
+    return new_tx.payload.unpack("H*").first, new_tx.hash
   end
 
   def get_unspents(from_address, total_value)
@@ -71,7 +68,7 @@ module BitcoinAPI
   end
 
   def select_unspents(unspents, total_value)
-    raise InsufficientAmount.new("Needed #{total_value.to_satoshis}, but only had #{unspents.unspent_value}. \nNote: Your unspents need to be confirmed first, maybe wait for another few minutes!") if unspents.unspent_value.to_satoshis < (total_value)
+    raise InsufficientAmount.new("Needed #{total_value.to_satoshis}, but only had #{unspents.unspent_value}. \nNote: Your unspents need to be confirmed first, maybe wait for another few minutes!") if unspents.unspent_value < (total_value)
     selected_unspents = []
     unspents.each do |unspent|
       if unspent["amount"] >= total_value

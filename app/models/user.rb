@@ -14,7 +14,7 @@ class User < ActiveRecord::Base
 
   def self.unauthenticated_with_tips
     unauthenticated.joins(:tips_received).where.not(
-      tweet_tips: { tx_hash: nil, satoshis: nil }
+      tweet_tips: { tx_hash: nil, amount: nil }
     ).group('users.id').having('COUNT(tweet_tips.id) > 0')
   end
 

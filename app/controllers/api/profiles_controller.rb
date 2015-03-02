@@ -26,8 +26,8 @@ class Api::ProfilesController < ActionController::Base
 
       # Count tips
       giving = tip.sender.screen_name == @user.screen_name
-      total_satoshis_given += tip.satoshis if giving
-      total_satoshis_received += tip.satoshis if !giving
+      total_satoshis_given += tip.amount if giving
+      total_satoshis_received += tip.amount if !giving
 
       # Other
       t = Tweet::Parser.new(tip.content, tip.screen_name)
@@ -57,7 +57,7 @@ class Api::ProfilesController < ActionController::Base
         txDirection:  giving ? "primary" : "success",
         txHash: tip.tx_hash,
         tweetLink: tip.build_link,
-        amount: tip.satoshis.to_BTCFloat,
+        amount: tip.amount.to_BTCFloat,
         other: other
       }
     end.compact

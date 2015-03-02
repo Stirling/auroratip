@@ -14,7 +14,7 @@ module Pending
 
         senders = unclaimed.map {|u| u.sender }
         # senders_names = senders.map {|s| s.screen_name}
-        senders_amount = unclaimed.sum(:satoshis).to_BTCFloat
+        senders_amount = unclaimed.sum(:amount).to_BTCFloat
 
         message = Tweet::Message::Pending.reminder(
           recipient.screen_name,
@@ -62,12 +62,12 @@ module Pending
 
         unclaimed = recipient.tips_received.unclaimed(has_been: 21.days)
         unclaimed.each do |tip|
-          refund_amount = tip.satoshis - FEE
+          refund_amount = tip.amount - FEE
 
           next if refund_amount < (10_000 + 5500)
 
           ap tip.content
-          ap tip.satoshis
+          ap tip.amount
           ap refund_amount
 
           if !dry
