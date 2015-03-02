@@ -25,7 +25,8 @@ module BitcoinAPI
   def send_tx(from_address, to_address, amount, fee = FEE)
     raise AmountShouldBeFixnum if amount.class != Fixnum
     hex = construct_tx(from_address, to_address, amount, fee)
-    push_tx(hex)
+    ap hex
+    #push_tx(hex)
     return hex
   end
 
@@ -50,7 +51,9 @@ module BitcoinAPI
       end
 
       # now deal with change
-      change_value = unspents.unspent_value - (amount+fee)
+      change_value = unspents.unspent_value - (amount+fee).to_BTCFloat
+      ap unspents.unspent_value
+      ap (amount+fee).to_BTCFloat
       if change_value > 0
         t.output do |o|
           o.value(change_value)
