@@ -5,7 +5,7 @@ class Tweet::Parser
   attr_accessor :content, :sender, :info, :mentions, :amount,
   :satoshis, :units, :symbol, :recipient
 
-  BOT = "tippercoin"
+  BOT = "auroratip"
 
   def initialize(content, sender)
     @content = content

@@ -94,7 +94,7 @@ class User < ActiveRecord::Base
   end
 
   def withdraw(amount, to_address)
-    BitcoinAPI.send_tx(addresses.last.address, to_address, amount)
+    BitcoinAPI.send_tx(addresses.last, to_address, amount)
     true
   end
 

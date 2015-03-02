@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html ng-app="tcApp">
 <head>
-  <title>TipperCoin</title>
+  <title>AuroraTip</title>
   <%= stylesheet_link_tag    "application", media: "all"%>
 
   <%= csrf_meta_tags %>
 
-  <link rel="icon" type="image/png" href="/favicon.png" />
+  <link rel="icon" type="image/png" href="/favicon.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="description" content="Send Bitcoins over Twitter">
-  <meta name="og:description" content="Send Bitcoins over Twitter">
+  <meta name="description" content="Send Auroracoins over Twitter">
+  <meta name="og:description" content="Send Auroracoins over Twitter">
   <meta name="keywords" content="bitcoin, twitter" />
 
-  <meta property="og:title" content="TipperCoin | Send Bitcoins over Twitter">
-  <meta property="og:url" content="http://www.tippercoin.com/">
-  <meta property="og:image" content="http://i.imgur.com/mCo7Ogx.png" />
+  <meta property="og:title" content="AuroraTip | Send Auroracoins over Twitter">
+  <meta property="og:url" content="http://auroratweet.auroracoin.io/">
+  <meta property="og:image" content="/logo.png" />
   <script type="text/javascript">
     var signedIn = <%= User.find_by(slug: session[:slug]) ? true : false %>
   </script>

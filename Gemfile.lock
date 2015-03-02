@@ -1,6 +1,7 @@
 GIT
   remote: git://github.com/greatwitenorth/bitcoin-ruby.git
-  revision: 946b044ae7fdd33941dee3db6d24c4e7994c4758
+  revision: c1320c30c046d555e51e1d04186e3bebac6bb6ef
+  ref: c1320
   specs:
     bitcoin-ruby (0.0.7)
 
@@ -263,7 +264,7 @@ DEPENDENCIES
   angular-ui-bootstrap-rails
   angularjs-rails (~> 1.2.5)
   awesome_print
-  bitcoin-ruby (~> 0.0.7)!
+  bitcoin-ruby!
   coffee-rails (~> 4.0.0)
   dalli
   devise

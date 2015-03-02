@@ -1,38 +1,35 @@
 module BitcoinNodeAPI
     extend self
-    ROOT = "http://chainz.cryptoid.info/aur/"
+    ROOT = "http://insight.auroracoin.io/api/"
 
     # string address
     # response float
     def get_balance(address)
-        get("api.dws?q=getbalance&a="+address, false).to_f.to_satoshis
+        get("addr/"+address+"?noCache=1")['balance'].to_satoshis
+        #(res['balance'] + res['unconfirmedBalance']).to_satoshis
     end
 
     # string[] addresses
     # response hash or nil
     def multi_addr(addresses)
-        get("api.dws?q=multiaddr&active="+addresses.join("|"))
+        get("addr/"+addresses.join(",")+"/balance?noCache=1")
     end
 
     # string[] addresses
     # unspents[] or nil
     def unspent(addresses)
-        get("api.dws?q=unspent&active="+addresses.join("|"))["unspent_outputs"]
+        get("addr/"+addresses.join(",")+"/utxo?noCache=1")
     end
 
     def get_tx(tx_hash)
-        res = HTTParty.get("https://chainz.cryptoid.info/explorer/tx.data.dws?coin=aur&id=#{tx_hash}")
-        return nil if error?(res)
-        JSON.parse(res.body)
+        get("tx/"+tx_hash)
     end
 
-    def push_tx(hex, tx_hash)
+    def push_tx(hex)
         payload = {
-          format: "plain",
-          tx: hex,
-          hash: tx_hash
+          :rawtx => hex
         }
-        post("pushtx", payload)
+        post("tx/send", payload)
     end
 
     def get(url, isJSONResponse = true)
@@ -49,6 +46,7 @@ module BitcoinNodeAPI
     def post(url, payload)
         options = {body: payload}
         res = HTTParty.post(ROOT + url, options)
+        ap res
         raise PushTransactionFailed.new(res.body, options.merge!({"status" => res.code})) if res.code >= 400
         res.body
     end

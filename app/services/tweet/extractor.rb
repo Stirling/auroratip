@@ -72,16 +72,6 @@ module Tweet::Extractor
         name: :coffee,
         regex: /\s(\d*.?\d*)\s?coffee/i,
         satoshify: Proc.new {|nStr| (nStr.to_f * 3 / Bitstamp.latest).to_satoshis }
-      },
-      {
-        name: :internet,
-        regex: /\s(\d*.?\d*)\s?internet/i,
-        satoshify: Proc.new {|nStr| (nStr.to_f * 0.001337).to_satoshis }
-      },
-      {
-        name: :shatner,
-        regex: /\s(\d*.?\d*)\s?shatner/i,
-        satoshify: Proc.new {|nStr| (nStr.to_f * 0.001701).to_satoshis}
       }
     ]
 

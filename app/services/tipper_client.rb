@@ -24,7 +24,7 @@ module TipperClient
 
   # Returns: Array of tweets
   def hashtags
-    TWITTER_CLIENT.search("#tippercoin").attrs[:statuses]
+    TWITTER_CLIENT.search("#auroratip").attrs[:statuses]
   end
 
   def uncaught_mentions

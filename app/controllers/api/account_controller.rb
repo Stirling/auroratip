@@ -70,7 +70,7 @@ class Api::AccountController < ActionController::Base
       screenName: @user.screen_name,
       address: @user.addresses.last.address,
       balance: @balance,
-      minerFee: 0.0001
+      minerFee: FEE.to_BTCFloat
     }
   end
 

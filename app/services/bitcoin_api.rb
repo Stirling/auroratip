@@ -24,21 +24,22 @@ module BitcoinAPI
   # BitcoinAPI.send_tx(from_address, "15TLNJ24UFixU1Vn7eogJYvgaH324SocK4", 0.001.to_satoshi, FEE)
   def send_tx(from_address, to_address, amount, fee = FEE)
     raise AmountShouldBeFixnum if amount.class != Fixnum
-    hex, tx_hash = construct_tx(from_address, to_address, amount, fee)
-    push_tx(hex, tx_hash)
-    return tx_hash
+    hex = construct_tx(from_address, to_address, amount, fee)
+    push_tx(hex)
+    return hex
   end
 
   def construct_tx(from_address, to_address, amount, fee)
     unspents = get_unspents(from_address.address, amount + fee)
-    prikey = from_address.decrypt()
+    prikey = AES.decrypt(from_address.encrypted_private_key, ENV["DECRYPTION_KEY"])
     key = Bitcoin::Key.new(prikey, nil, false)
-
+    
     new_tx = build_tx do |t|
       unspents.each do |unspent|
         t.input do |i|
-          i.prev_out(Bitcoin::P::Tx.new(BitcoinNodeAPI.get_tx(unspent["tx_hash"].reverse_hex)))
-          i.prev_out_index(unspent["tx_output_n"])
+          i.prev_out unspent["txid"]
+          i.prev_out_index unspent["vout"]
+          i.prev_out_script [unspent["scriptPubKey"]].pack("H*")
           i.signature_key(key)
         end
       end
@@ -53,12 +54,12 @@ module BitcoinAPI
       if change_value > 0
         t.output do |o|
           o.value(change_value)
-          o.script {|s| s.recipient key.addr }
+          o.script {|s| s.recipient from_address.address }
         end
-      end
+      end      
     end
 
-    return new_tx.payload.unpack("H*").first, new_tx.hash
+    return new_tx.payload.unpack("H*").first
   end
 
   def get_unspents(from_address, total_value)
@@ -67,10 +68,10 @@ module BitcoinAPI
   end
 
   def select_unspents(unspents, total_value)
-    raise InsufficientAmount.new("Needed #{total_value}, but only had #{unspents.unspent_value}. \nNote: Your unspents need to be confirmed first, maybe wait for another few minutes!") if unspents.unspent_value < (total_value)
+    raise InsufficientAmount.new("Needed #{total_value.to_satoshis}, but only had #{unspents.unspent_value}. \nNote: Your unspents need to be confirmed first, maybe wait for another few minutes!") if unspents.unspent_value.to_satoshis < (total_value)
     selected_unspents = []
     unspents.each do |unspent|
-      if unspent["value"] >= total_value
+      if unspent["amount"] >= total_value
         return [unspent]
       else
         selected_unspents << unspent
@@ -79,8 +80,8 @@ module BitcoinAPI
     end
   end
 
-  def push_tx(hex, tx_hash)
-    BitcoinNodeAPI.push_tx(hex, tx_hash)
+  def push_tx(hex)
+    BitcoinNodeAPI.push_tx(hex)
   end
 
   class TxError < StandardError; end
@@ -89,7 +90,7 @@ module BitcoinAPI
 
   class ::Array
     def unspent_value
-      self.sum { |unspent| unspent["value"] }
+      self.sum { |unspent| unspent["amount"] }
     end
   end
 
