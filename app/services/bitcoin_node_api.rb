@@ -5,8 +5,9 @@ module BitcoinNodeAPI
     # string address
     # response float
     def get_balance(address)
-        res = get("addr/"+address+"?noCache=1")
-        (res['balance'] + res['unconfirmedBalance']).to_BTCFloat
+        #res = get("addr/"+address+"?noCache=1")
+        #(res['balance'] + res['unconfirmedBalance']).to_BTCFloat
+        get("addr/"+address+"?noCache=1")['balance'].to_BTCFloat
     end
 
     # string[] addresses
