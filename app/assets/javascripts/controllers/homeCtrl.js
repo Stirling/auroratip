@@ -1,5 +1,5 @@
 'use strict'
 
 tcApp.controller( "homeCtrl", function( $scope ) {
-	$scope.headline = "Send Bitcoins over Twitter"
+	$scope.headline = "Send Auroracoins over Twitter"
 } )
