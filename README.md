@@ -1,3 +1,6 @@
+# Auroracoin Port
+This is the Auroracoin port of [TwitterCoin](https://github.com/BitcoinMafia/twittercoin). It allows you to send Auroracoin via Twitter.
+
 # Getting started
 
 ### Set up the ENV variables
