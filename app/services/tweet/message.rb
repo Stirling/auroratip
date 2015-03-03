@@ -5,7 +5,7 @@ module Tweet::Message
 
     def recipient(recipient, sender, amount)
       link = "auroratip.auroracoin.io/#/profile/#{recipient}?direct=true&r=#{Helper.rand()}"
-      "@#{recipient}, @#{sender} just tipped you #{amount.to_BTCStr} BTC! "\
+      "@#{recipient}, @#{sender} just tipped you #{amount.to_BTCStr} AUR! "\
       "See it here #{link}"
     end
   end
