@@ -30,7 +30,8 @@ module BitcoinAPI
   end
 
   def construct_tx(from_address, to_address, amount, fee)
-    unspents = get_unspents(from_address.address, amount + fee)
+    total_value = (amount+fee).to_BTCFloat
+    unspents = get_unspents(from_address.address, total_value)
     prikey = AES.decrypt(from_address.encrypted_private_key, ENV["DECRYPTION_KEY"])
     key = Bitcoin::Key.new(prikey, nil, false)
     
@@ -50,7 +51,7 @@ module BitcoinAPI
       end
 
       # now deal with change
-      change_value = unspents.unspent_value - (amount+fee).to_BTCFloat
+      change_value = unspents.unspent_value - total_value
       if change_value > 0
         t.output do |o|
           o.value(change_value.to_satoshis)
@@ -68,7 +69,7 @@ module BitcoinAPI
   end
 
   def select_unspents(unspents, total_value)
-    raise InsufficientAmount.new("Needed #{total_value.to_satoshis}, but only had #{unspents.unspent_value}. \nNote: Your unspents need to be confirmed first, maybe wait for another few minutes!") if unspents.unspent_value < (total_value)
+    raise InsufficientAmount.new("Needed #{total_value}, but only had #{unspents.unspent_value}. \nNote: Your unspents need to be confirmed first, maybe wait for another few minutes!") if unspents.unspent_value < (total_value)
     selected_unspents = []
     unspents.each do |unspent|
       if unspent["amount"] >= total_value
