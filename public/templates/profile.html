@@ -40,7 +40,7 @@
 					<div class='h2 text-muted pull-left'><strong>TIPS RECEIVED:</strong></div>
 				</div>
 				<div class="col-md-4">
-					<p class='h2 text-success'>{{profile.totalTipsReceived}} BTC</p>
+					<p class='h2 text-success'>{{profile.totalTipsReceived}} AUR</p>
 				</div>
 			</div>
 			<div class="row">
@@ -48,7 +48,7 @@
 					<div class='h2 text-muted pull-left'><strong>TIPS GIVEN:</strong></div>
 				</div>
 				<div class="col-md-4">
-					<p class='h2 text-primary'>{{profile.totalTipsGiven}} BTC</p>
+					<p class='h2 text-primary'>{{profile.totalTipsGiven}} AUR</p>
 				</div>
 			</div>
 		</div>
@@ -101,7 +101,7 @@
 						</td>
 						<td>
 							<p class="lead text-success">
-								<span class="text-{{tip.txDirection}}">{{tip.amount}} BTC</span>
+								<span class="text-{{tip.txDirection}}">{{tip.amount}} AUR</span>
 								<span class="text-muted" ng-show="tip.other.presence">
 									<small>/{{tip.other.units}} {{tip.other.symbol}}</small>
 								</span>
